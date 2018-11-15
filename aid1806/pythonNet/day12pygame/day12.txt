@@ -1,0 +1,237 @@
+day12.txt
+
+修改操作符的使用
+$set
+修改一个域的值，增加一个值
+db.class0.update({name:'Lily'},{$set:{sex:'w'}})
+如果不存在sex域，则会添加
+
+$unset
+删除一个域
+db.class0.update({name:'Tom'},{$unset:{sex:''}})
+以空字符串来表明删掉指定的域
+
+每个操作符可以同时操作多项
+ db.class0.update({name:'Tom'},{$set:{age:24,sex:'m'}})
+
+一次修改可以同时使用多个操作符
+db.class0.update
+({name:'Tom'},{$set:{name:'荀彧'},$unset:{sex:''}})
+
+$rename
+db.class0.update
+({'性别':{$exists:true}},{$rename:{'性别':'gender'}})
+域重命名
+
+$setOnInsert
+如果第三个参数为true且插入数据，则表示插入数据的补充内容，
+如果不插入则不起作用
+
+如果插入新文档，则setOnInsert中键值对也作为文档内容
+ db.class0.update
+ ({name:'xaiohong'},
+ {$set:{age:25},$setOnInsert:{gender:'w'},true)
+
+$inc  
+加减修改器
+db.class0.update({},{$inc:{age:-1}},false,true)
+
+$mul
+乘法修改器
+
+$min
+如果筛选文档指定域的值小于min值则不修改，大于则修改为min值
+
+$max
+与min 相反
+
+数组修改器
+    $push  向数组中添加一项
+db.class2.update({name:'qing'},{$push:{score:92}})
+
+
+$pushAll  向数组中添加多项
+db.class2.update({name:'qing'},{$pushAll:{score:[5,15]}})
+
+$pull  从数组中删除一项
+db.class2.update({name:'qing'},{$pull:{score:15}})
+
+$pullAll  从数组中删除多项
+ db.class2.update({name:'qing'},{$pullAll:{score:[92,5]}})
+
+$each  对多个值进行逐一操作
+db.class2.update({name:'qing'},{$push:{score:{$each:[10,70]}}})
+
+$position  指定插入位置 
+db.class2.update      
+({name:'hong'},{$push:{score:{$each:[5],$position:1}}})
+
+$sort  对数组进行排序
+db.class2.update
+({name:'qing'},{$push:{score:{$each:[],$sort:1}}})
+
+$pop
+弹出一项
+-1 是弹出第一项   1是弹出最后一项
+db.class2.update({name:'qing'},{$pop:{score:-1}})
+
+$addToSet
+向数组中添加一项，不允许添加重复内容
+
+
+时间类型
+mongo支持时间格式： ISOData()
+    1,使用new Date()  自动生成当前时间
+    db.class0.insert({book:'rumen',date:new Date()})
+    2，使用ISODate()   生成当前时间
+     db.class0.insert({book:'精通',date:ISODate()})
+    3,获取计算机时间生成时间格式字符串  Date()
+    db.class0.insert({book:'疯狂',date:Date()})
+
+    指定时间：
+    ISOData()
+    功能：生成mongodb时间存储类型
+    参数：不加参数生成当前时间
+        指定时间格式参数：
+        '2018-1-1 12:12:12'
+        '20180101 12:12:12'
+        '20180101'
+         
+         db.class2.insert
+         ({book:'崩溃',date:ISODate('2018-07-13 11:34:23' )})
+
+
+valueOf()
+生成某个时间的时间戳
+
+db.class0.insert
+({book:'python重生',date:ISODate().valueOf()})
+
+Null 类型
+值：null
+
+    1,如果某个域存在但是没有值，插入null
+
+    2，在查找时可以找到值为null或者不存在某个域的文档
+    db.class2.find({date:null},{_id:0})
+
+数组的下标操作方式
+可以通过 域名.下标  的方式集体操作数组的某一项
+ db.class2.find({'score.1':81},{_id:0})
+
+db.class2.update({name:'hong'},{$set:{'score.1':10}})
+将  hong 的score数组中索引为1的数字改为10
+
+
+内部文档操作   object
+文档内部某个域的值还是一个文档，则这个文档称为
+内部文档类型数据
+
+通过外部域.内部域  的方式因公内部文档中某个域的值进行操作
+db.class3.find({'book.title':'狂人日记'},{_id:0})
+
+查找结果的下标引用
+获取查找结果的第2项
+db.class3.find({},{_id:0})[2]
+
+
+练习：
+    使用之前 的grade数据库
+    1，将xiaohong 年龄改为8岁 ，兴趣爱好变为跳舞，画画
+    2，追加小明兴趣爱好  唱歌
+    3，追加小王兴趣爱好  吹牛 打篮球
+    4，小李兴趣多了跑步唱歌  但是要确保不和以前的重复
+    5，将所有同学年龄家1
+    6，删除小明的sex属性
+    7.，删除小李兴趣的第一项
+    8，删除小红兴趣中的画画 唱歌
+    9，为小红增加一个域，为  
+    score:{english:93,chinese:92,math:78}
+    10,给小红数学成绩加5
+    11，小明的第一爱好改为computer
+
+
+
+索引
+指建立指定键值及所在文档中存储位置的对照清单，使用索引
+可以方便我们快速查找，减少数据遍历次数，从而提高查找效率
+
+Mongodb创建索引
+ensureIndex()
+功能：创建索引
+参数：索引选项   第一个为对哪个域创建索引
+              第二个为索引的选项
+对name域创建索引
+ db.class5.ensureIndex({name:1})
+
+1 表示正向索引
+-1 反向索引
+
+查看某个集合索引
+ db.class5.getIndexes()
+ _id 是系统为每个集合自动创建的索引
+
+自定义索引名称
+通过第二个参数传入索引选项实现
+db.class5.ensureIndex({age:1},{name:'ageIndex'})
+
+同一个域不能重复创建相同的索引，一个集合中
+索引名也不要相同
+
+删除索引
+dropIndex()
+功能：删除一个索引
+参数：索引名或者索引键值对
+ db.class5.dropIndex({name:1})
+
+dropIndexes()
+功能：删除集合所有索引 但是不会删除_id索引
+
+其他索引类型：
+    同时根据多个域来创建一个索引，比单独创建两个索引更节省空间
+ db.class5.ensureIndex({name:1,age:-1})
+
+数组和子文档索引：
+   如果对某个数组和子文档域创建索引，那么根据数组和子文档
+的查找均为索引查找   
+db.class5.find({'hobby.0':'draw'},{_id:0})
+
+覆盖索引
+    查找操作需要获取的域只有索引域 没有其他域时，索引表可以直接提供给客户
+    想要的内容。提高查找效率
+
+唯一索引
+    创建的索引索引域值无重复，此时可以创建唯一索引，唯一索引
+    的数据结构更加便于查找
+
+    当对某个域创建唯一索引，该域就不能再插入重复数据
+
+稀疏索引
+    只针对有指定域的文档创建索引表，如果某个文档没有该域
+    则不会插入到索引表中
+ 对age创建稀疏索引
+db.class5.ensureIndex({age:1},{sparse:true})
+
+索引约束
+    1，索引表也需要占用一定的磁盘空间
+    2，当数据发生更新时，索引表也随之更新
+
+综合：1，当数据量较大时更适合创建索引，数据较小的时候没有必要
+     2，频繁进行查找操作而不是更新删除插入操作，
+     更适合索引
+
+固定集合：
+    1，mongodb中可以创建大小固定的集合，称之为固定集合
+    特点：插入速度快，顺序查找更快
+         可以控制集合的大小
+        能够自动淘汰早期数据
+
+
+
+
+
+
+
+
+
+

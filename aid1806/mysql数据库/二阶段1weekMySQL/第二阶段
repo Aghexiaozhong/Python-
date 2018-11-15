@@ -1,0 +1,809 @@
+day1
+MYSQL
+概述
+vi stuinfo.txt 将数据存入系统文件
+1.什么是数据库
+存储数据的厂库
+2.那些公司在用数据库
+金融机构，电商平台，游戏公司，论坛网站。。。
+数据库软件分类
+
+
+生产中如何选着
+1是否开源（开源不是免费 源代码开放，可以修改源代码）
+2开源软件：Mysql Mariadb Mongodb
+3商业软件：Oracle db2 sql_server
+是否跨平台
+不跨平台的软件：sql_server
+公司的类型
+1商业：政府部门，金融机构，
+2开源： 游戏网站，论坛网站，购物网站
+
+My特点
+1.关系型数据库的特点
+    1，数据以行和列的表格形式存储的
+    2，表中的每一行叫一条记录，一列叫一个字段
+    3，表和表之间的逻辑关联叫关系
+2.可以跨平台
+支持多种编程语言 py java php
+
+数据库软件，数据库，数据厂库的概念
+1.一个软件，看得见，可操作，实现数据库的逻辑功能
+2，数据库是逻辑概念，用来存放数据的仓库更侧重存储
+3，数据仓库从数据量上说要比数据库庞大，侧重与数据分析，与数据挖掘
+
+Ubantu安装Mysql
+安装服务器
+sudo apt-get install mysql-server
+安装客户端
+sudo apt-get install mysql-client
+Ubantu安装软件
+1，sudo apt-get update 访问源列表中的每一个网址，读取软件列表，保存到/var/lib/apt/lists/
+2, sudo apt-get upgrade
+如果本地安装的软件与刚下载的软件列表进行对比，如果发现已安装的版本低，就更新
+3. sudo apt-get -f install
+修复依赖关系（提示依赖关系有问题）
+
+windows安装My
+1，下载My安装包
+mysql-installer***5.7***.msi
+
+My最新版本8.0
+教学版本5.7
+
+启动和连接My服务
+1.服务端启动
+sudo /etc/init.d/mysql status查看状态
+sudo /etc/init.d/mysql start| stop | restart
+2.客户端链接
+mysql -h主机地址 -u用户名 -p密码
+mysql -hlocalhost -uroot -p123456
+mysql -uroot -p123456用户本地登录
+
+基本sql命令使用规则
+1，每条命令必须有；结尾
+2.不区分大小写
+3，使用\c 来终止当前命令的执行
+
+库的管理
+查看已有的库
+show databases;
+创建库
+create database 库名；
+查看创建库的语句(指定字符集)
+show /
+create database 库名 character set utf8;
+查看当前所在库
+select database();
+切换库
+use 库名；
+查看库中已有表
+show tables;
+删除库
+drop database 库名；
+库名的命名规则
+1 数字，字母，下划线，不能使用纯数字
+2 库名区分字母大小写
+3 不能使用特殊字符和my关键字
+
+表的管理
+1 创建表（可指定字符集）
+create table 表名（字段名 数据类型，字段名2 数据类型，
+。。。）；
+show tables 查看库中的表有那些
+2，查看已有表的字符集
+show create table 表名；
+3 查看表结构
+desc 表名；
+4 删除表
+drop table 表名；
+
+注意
+1 所有的数据都是以文件的形式存放在数据库目录下
+2 数据库目录：根/var/lib/mysql(基于硬盘读写)
+
+Mac安装mysql
+1 cd 
+2 vi .bash_profile
+添加: PATH="$PATH":/usr/local/mysql/bin
+3 source .base_profile
+
+表记录的管理
+1 插入一天或多条记录
+insert into 表名 values(值1)，(值2)....（一个值表示一条记录）；
+insert into 表名(字段1，...) values(值1)；
+2 查询
+select * from 表名[where 条件]；(按所写条件显示信息)
+select 字段1，字段2 from 表名 [where 条件]；(只查看字段中的信息)
+
+如何更改默认字符集
+
+1获取root权限
+sudo -i
+cd /etc/mysql/mysql.conf.d/
+备份 cp mysqld.cnf mysqld.cnf.dak
+subl mysqld.cnf
+[mysqld]
+character_set_server =utf8
+重启mysql服务
+/etc/init.d/mysql restart
+
+客户端把数据存储到数据库服务器上的过程
+1 链接到服务器mysql -uroot -p123456
+2 选择一个库 use 表名。。。
+3 创建表/修改表 update 表名。。
+4 断开与数据库链接 exit; |quait;|\q；
+
+数据类型
+1数值类型
+  整型数
+    int 大整型（4个字节）(2**32-1(42亿)~)
+    tinyint 微小整型(1个字节)
+      有符号(signed默认)-128~127
+      无符号(unsigned)0~255
+      age tinyint unsigned
+    smallint 小整型(2个字节)
+    bigint 极大整型(8个字节)
+  浮点型
+    float(m,n)m代表总位数 n代表小数位数(4个字节)
+    最多显示7位数,小数位多余规定的时会对下一位四舍五入
+    decimal(最多显示28个有效位数)(m,n)
+    将9的倍数包装成4个字节
+    余数0-0,1-2=1（字节），（3-4）=)2
+    存储空间 就是4+总位数%9的位数
+2字符类型
+  char(订长)1~255
+  varchar(变长)1~65535
+  区别：char定长在输入宽度达不到目的时，后面补空格达到定长
+  性能高
+       varchar(变长)输入几个数据就为几个数据，节省存储空间，性能低
+       text/longtext(4G)
+字符类型宽度和数值类型宽度的区别
+  1 数值类型宽度为显示宽度，只用于select查询显示，
+  和占用存储无关，可用zreofill查看显示宽度
+  2 字符类型的宽度超过之后则无法存储
+3枚举类型
+  1 单选
+  字段名 enum(值1,值2....)
+  2 多选
+  字段名 set(值1,值2,....)
+
+4日期时间类型
+ 1 data:'yyyy-mm-dd'
+ 2 time:'hh:mm:ss'
+ 3 datetime:'yyyy-mm-dd hh:mm:ss'（默认返回空值）
+ 4 timestamp:'yyyy-mm-dd hh:mm:ss'(不给赋值时，返回系统当前时间)
+ 日期函数：
+ 1 now ()返回服务器当前的时间
+ 2 curdate() 返回当前日期
+ 3 curtime() 返回当前时间
+ 4 year(date) 返回指定时间的年份
+ 5 date(date) 返回指定时间的日期
+ 6 time(date) 返回指定时间的时间
+ 可以嵌套使用
+ 日期时间运算
+  1 语法格式
+    select * from 表名
+    where 字段名 运算符 (时间-interval 时间间隔单位);
+    时间间隔单位
+      1 day|2 hour|1 minute|2 year|3 month
+      运算符 <(单位时间之前)  >(单位时间之内)
+
+
++++++++++++++++++++++++
+d02
+表字段的操作
+1 语法：alter table 表名 执行动作
+2 添加一个字段 
+ alter table 表名 add 字段名 数据类型(默认添加到末尾);
+ alter table 表名 add 字段名 数据类型 first(添加到首位);
+ alter table 表名 add 字段名 数据类型 after 字段名；(添加到指定的位置之后)
+3 删除一个字段
+alter table 表名 drop 字段名；
+4 修改数据类型
+alter table 表名 modify 字段名 新数据类型;
+5 修改新的表名
+alter table 表名 rename 新表名；
+
+表记录的管理
+1 删除表记录
+ 1 delete from 表名 where 条件；
+ 2 注意 delete语句之后不加where条件，所有记录清空
+2更改表记录
+ 1 update 表名 set 字段1=值1，子段2=值2...where 条件；
+
+运算符操作
+ 1 数值比较/字符比较
+  1 数值比较：= != > >= < <=
+  2 字符比较：= !=
+ 2 逻辑比较 
+ and 两个或多个条件同时成立
+ or  任意一个条件成立就可
+ 3 范围比较
+  1 between 值1 and 值2
+  2 where 字段名 in(值1，值2...)
+  3 where 字段名 not in(值1，值2...)
+
+匹配空、非空
+ 1 空: where name is null
+ 2 非空 where name is not null
+ null 空值，只能用is或is not 去匹配
+ ‘’  空字符串 用=或!=去匹配
+
+模糊比较
+where 字段名 like 表达式 
+1 _:匹配单个字符
+2 %：匹配0到多个字符
+like '___'
+like '%'
+
+SQL查询
+select ...聚合函数 from 表名
+where...
+group by...
+having...
+order by...
+给查询结果进行排序
+ ，，，order by 字段名 ASC/desc 升/降
+
+limit(永远放在SQL语句最后写) ....
+限制显示查询记录的条数
+用法
+ 1 limit n  显示n条记录
+ 2 limit m,n 从m+1开始显示，显示n条
+ 分页
+ 每一页显示5条记录，显示第4页的内容
+ limit 15,5
+ 第一页；limit 0,5
+ 第二页；limit(2-1)*5,5
+ 第三页；limit(3-1)*5,5
+ 第四页；limit(4-1)*5,5
+ 每页显示n条记录 显示第m页 ：limit (m-1)*n,n
+
+聚合函数
+ 1 分类
+   avg(字段名)：求该字段平均值
+   sum(字段名)：求该字段的和in
+   max(字段名)：求该字段最大值
+   min(字段名)：求该字段最小值
+   count(字段名)：求该字段记录的个数#空值null 不会被统计
+select avg(字段名) from [可跨库加库名.] 表名
+++++++++++++++++++++++++++7c4a8d09ca3762af61e59520943dc26494f8941b++
+d03
+SQL查询
+ 1，执行顺序
+3select ...聚合函数 from 表名
+1where...（表中真实存在的）
+2group by...
+4having...（表中可不存在的，例如avg(...))
+5order by...
+6limit....
+
+group by....(前后字段名要相同)
+作用：给查询的结果进行分组
+示例
+ 1 查询表中有几个国家在SANGUO表中
+  select country from sanguo group by country;
+ 2 计算每个国家的平均攻击力
+  select country,avg(gongji) from sanguo
+  group by country;
+  (先分组，再聚合，最后去重)
+ 3 注意 group by 之后的字段名必须要为select之后的字段名
+     如若不一样，则必须对select之后的字段做聚合处理
+
+having语句
+ 作用：对查询的结果进行进一步的筛选 
+ 示例 找出平均攻击力>105的国家的前两名，显示国家和平均攻击力
+ select country,avg(gongji) from sanguo
+    -> group by country 
+    -> having avg(gongji)>105
+    -> order by avg(gongji) desc
+    -> limit 0,2;
+ 注意 
+   1 having语句通常和group by 语句联合使用，过滤由group by语句返回的记录集
+   2 where 只能操作表中实际存在的字段，having可操作由聚合函数生成的显示列
+
+distinct
+作用：不显示字段重复值，不做聚合处理
+如果distinct和from 之间所有字段都相同才会去重
+2 不能对任何字段做聚合处理
+
+查询表记录时做数学运算
+1 运算符
++ - × / %
+select id,name,gongji*2 from sanguo;
+
+约束
+ 1 作用 保证数据的完整性、一致性、有效性
+ 2约束的分类
+   1 默认约束（default)
+     插入记录时，不给该字段赋值，则使用默认值
+   2 非空约束（not Null)
+     不允许该字段有Null记录
+     sex enum('f','m','s') not null defalut 's';
+
+索引
+定义：对数据表的一列或多列的值进行排序的一种结构(Btree方式)
+优点：加快数据检索速度
+缺点：占用物理存储空间；当对表中数据更新时，索引需要动态维护，降低数据维护速度
+索引示例；
+    1 开启运行时间记录变量：set profiling=1;
+    show variables like 'profiling';查询是否开启
+    set profiling=1;终端开启方法
+    2 执行查询语句
+    select name from t1 where name='lucy99999';
+    3 查看执行时间
+    show profiles;
+    4 在name字段创建索引
+    create index name on t1(name);
+    5 在执行查询语句
+    select name from t1 where name='lucy99999';
+    6 在查看执行时间
+    show profiles;
+    7 关闭时间记录
+    set profiling=0;
+索引的分类
+ 1 普通索引：index 
+    使用规则：可设置多个字段；字段值无约束；key标志MUL
+      1创建索引：创建表时创建索引
+        create table 表名（...
+        index(字段名)，index(字段名2);
+        示例：create table t3(
+        -> id int,
+        -> name varchar(8),
+        -> score decimal(5,2),
+        -> index(id),
+        -> index(name));
+      2已有表中创建索引
+        create index 字段名 on 表名(字段名);
+    查看索引
+     desc 表名 ;  key标志为：MUL
+     show index from 表名\G ;
+    删除索引
+     drop index 索引名 on 表名;(只能一个一个删除)
+
+
+ 2 唯一索引：
+   使用规则
+     1 可设置多个字段
+     2 约束 字段值不允许重复，但是可以为空值
+     3 key 标志：UNI
+    创建表时创建
+     crete  unique  index on 表名 字段名
+    已有表
+     create unique index 索引名 on 表名(字段名);
+    查看与删除同普通索引
+
+
+ 3 主键索引：(primary key)
+   自增长属性(auto_increment,配合主键一起使用)
+   使用规则
+    1 只能有一个主键字段在一个表中
+    2 约束 不允许重复且不能为NULL
+    3 key标志：PRI
+    4 通常设置记录编号字段ID，能唯一锁定一条记录
+   创建表时创建
+     create table 表名(id int primary key auto_increment,...);后加auto_increment=100
+     指定从100开始；
+   在已有表重新指定起始值
+     alter table 表名 auto_increment=100;
+   已有表中添加主键索引(受表中条件影响)
+      alter table 表名 add primary key();
+   已有表中添加自增长属性
+      alter table 表名 add modify id int auto_increment;
+
+
+   删除
+     删除自增长属性(modify)
+     alter table 表名 modify id int;
+     删除主键索引
+     alter table 表名 drop primary key;
+
+
+ 4 外键索引：foreign key
+    定义：让当前表的字段值在另一个表的范围内选择
+    语法： 字段名 数据类型 foreign key(参考字段名)
+         references(主表被参考字段名)
+         on delete 级联动作
+         on update 级联动作
+    使用规则： 
+        1 主表，从表字段数据类型一致
+        2 主表被参考字段：主键
+    示例 
+        表1，缴费信息表（财务）
+         id  name  班级   缴费金额
+          1   信息   01     300
+          2    a    01      260
+        
+        表2，学生信息表（班主任）
+          id    name      缴费金额
+           1     信息        300                   2      a         260
+
+    删除外键
+      alter table 表名 drop foreign key 外键名;
+    级联动作
+      1 cascade 数据级联删除，更新（只限与参考字段）
+      2 restrict(默认)  从表有相关联记录，不允许主表操作
+      3 set null 主表删除，更新，从表相关联字段值为null
+    已有表添加外键
+        alter table 表名 add
+        foreign key(被参考字段) references 主表表名()
+        on delete set null
+        on update set null(null)
+
+
+
+数据的导入
+  作用：把文件系统的内容导入到数据库中
+  语法：load data infile'/var/lib/mysql-files/文件名'
+       into table 表名
+       fields terminated by'分隔符'(这里视情况而定)
+       lines terminated by'\n';
+   将scoretable.csv文件导入到数据库的表中
+     1 在数据库中创建一个对应的表
+        create table t1(id int,name varchar(5),score float(4,1),number bigint,class char(7));
+
+     2 把文件拷贝到数据库的默认搜索路径中
+       1 show variables like'secure_file_priv'(查看搜索路径); 
+         /var/lib/mysql-files/(默认搜索路径)
+       2 拷贝文件(拷贝一次就行)
+         sudo cp ~/scoretable.csv /var/lib/mysql-files/
+         sudo -i
+         cd /var/lib/mysql-files/
+         ls -l(查看文件权限)
+
+    文件权限分析
+        rwxrw-rw- 1 tarena tarena  scoretable.csv
+                    所有者   所属组
+        rwx:tarena 用户
+        rw-:同组其他用户
+        rw-:其他组的其他用户
+        要在Mysql中执行niux的命令 在前加system
+
+    修改权限：chmod 644 文件名 r=4 w=2 x=1 rw-r--r--
+            cat/vi 文件名 查看文件内容
+
+    Excel表格如何转化为csv文件
+        1 打开Excel文件-->另存为->csv(逗号分割)
+        更改文件编码格式
+        1 用记事本/编辑器 打开，文件->另存为->选择编码
+
+     3 执行数据导入语句
+     load data infile '/var/lib/mysql-files/scoretable.csv'
+    into table t1
+    fields terminated by ','
+    lines terminated by '\n';
+
+  数据导出
+  作用：将数据库中表的记录导出到系统文件里
+  语法格式：
+    select...from 表名
+    into outfile'/var/lib/mysql-files/文件名'
+    fields terminated by'分隔符'
+    lines terminated by'\n';
++++++++++++++++++++++++++++++++++++
+ d04
+表的复制
+ 语法
+   create table 新表名 select....from 表名 where 条件;
+
+ 复制表结构
+   create table 新表名 select * from 表名 where false;
+ 复制表的时候，不会把原表的 键（key) 属性复制过来
+
+
+
+嵌套查询（子查询）
+   定义：把内层的查询结果作为外层的查询条件
+   语法格式：
+    select ...from 表名 where 条件(select...);
+   示例：
+       三国表中的攻击值小于平均攻击值英雄的id name
+    select name,gongji from sanguo where gongji<(select avg(gongji) from sanguo);
+       找出三国表中三个国家最高攻击的英雄的姓名和攻击值
+    select name,gongji from sanguo where(country,gongji) in(select country,max(gongji) from sanguo group by country);
+
+
+多表查询
+ 1.select 字段名列表 from 表名列表；
+ t1: name1  a1 a2 a3
+ t2: name2  b1 b2
+ select * from t1,t2;
+ select t1.name,t2.name from t1,t2;
+
+ 示例：笛卡尔积
+     name1 name2
+      a1     b1
+      a1     b2
+      a2     b1
+      a2     b2
+      a3     b1
+      a3     b2
+前表每一条记录读取后表每一条记录
+2. ....where 条件；
+    select sheng.s_name,city.c_name from sheng,city
+    where
+    sheng.s_id=city.cfather_id;
+
+连接查询
+  1 内连接（无法笛卡尔积）
+    语法格式：
+    select 字段名 from 表1 inner join 表2 on 条件
+    inner join 表3 on 条件；
+   示例：
+   select sheng.s_name,city.c_name from sheng inner join city on sheng.s_id=city.cfather_id;
+
+  2 外连接
+    1 左连接：以 左表 为主显示查询结果
+      select 字段名 from 表1 left join 表2 on 条件
+      left join 表3 on 条件；
+    示例：
+    select sheng.s_name as shing,city.c_name as city 
+    from sheng left join city
+    on sheng.s_id=city.cfather_id;
+
+    2 右连接（将左连接中的 left 改为 right)右表为主
+
+数据备份（mysqldump,在Linux终端中操作）
+  1 命令格式
+     mysqldump -u用户名 -p 源库名 > ~/***.sql
+  2 源库名的表示方法
+  --all-databases 备份所有库
+  库名             备份单个库
+  -B 库1 库2 库3   备份多个库
+  库名 表1 表2 表3  备份指定库的多张表
+  mkdir (新建一个文件夹)
+  示例 备份所有库 all.sql  
+       mysqldump -uroot -p --all-databases > all.sql
+       备份 db4 库中的 sheng city xian三张表 scx.sql
+
+       备份 MOSHOU 和 db4 ,md.sql
+
+数据恢复
+   命令格式：（Linux终端)
+     mysql -uroot -p 目标库名 < ***.sql
+   从所有库备份中恢复某一个库(--one-database)
+     mysql -uroot -p --one-database 目标库名 < all.sql
+1 在恢复一个库时如果恢复到原来的库会将表中的数据覆盖，新增表不会删除
+2 数据恢复的库不存在，则必须先创建空库
+   
+mysql 的用户账户管理
+   1 开启mysql远程连接
+     sudo -i
+     cd /etc/mysql/mysql.conf.d/
+     subl mysqld.cnf
+     #bind-address=127.0.0.1  crl+s
+     /etc/init.d/mysql resart
+   2 添加授权用户(mysql中进行)
+    1 用root用户登录mysql
+    2 授权
+      grant 权限列表 on 库.表 to '用户名'@'%'(指定电脑)
+      identified by '密码' with grant option;
+   权限列表：all privileges,select,insert 库.表 *.*所有库所有表
+++++++++++++++++++++++++++++++++++
+d05
+存储引擎（处理表的处理器）
+   基本操作
+     查看所有引擎
+        mysql > show engines
+     查看已有表的存储引擎
+     mysql> show create table 表名
+     创建表时指定存储引擎
+     create table 表名（..)engine=innodb;
+     已有表
+     alter table 表名 engine=innodb;
+
+锁
+ 1 目的：解决客户端并发访问的冲突问题
+ 2 锁分类
+    1读锁（共享锁）
+    select:加读锁后，别人不能更改此表记录但可以查询
+
+    2写锁（互斥锁，排他锁）
+    insert,delete,update：不能查，不能改
+    锁粒度
+      1 表级锁:myisam
+      2 行级锁：innodb
+常用的存储引擎
+  1 innodb特点
+     1 共享表空间
+       表名.frm(表结构与索引文件)
+       表名.ibd（表记录）
+     2 支持行级锁
+     3 支持外键和事务操作
+  2 myisam特点
+     1 独享表空间
+        表名.frm(表结构)
+        表名.MYD(表记录)mydate
+        表名.MYI(索引文件)myindex
+     2 只支持表级锁
+如何决定使用那个存储引擎
+   1 执行查询操作多的表用myisam(使用innodb浪费资源)
+   2 执行写多的表用innodb
+Mysql基本的调优
+   1 选择合适的存储引擎
+   读多用myisam,写多用innodb
+   2 创建索引
+     在select,where,order by 经常涉及到的字段给它建立索引
+   3 sql语句的优化
+     1 where 子句中不使用 !=,否则就是放弃索引进行全表扫描
+     2 尽量避免Null值判断，否则放弃索引进行全表索引
+       优化前：select number from t1 where number is
+       null 
+       优化后：在设置表时在number 列上设置默认值为0，确保无
+       Null；
+     3 尽量避免用 or 连接条件，否则放弃索引全表扫描
+     优化前：select id from t1 where id=10 or id=20;
+     优化后：select id from t1 where id=10 union all
+            select id from ti where id=20;
+     union all:可以连接多条sql语句
+     4 模糊查询尽量避免使用前置%，否则全表扫描
+     5 尽量避免使用 in /not in,否则进行全表扫描
+       select id from t1 where id in(1,2,3,4)
+       优化后：select id from t1 where id between 1 and 4;  
+     6 尽量避免使用*；用具体字段代替，不要返回无用的字段
+
+事务和事务回滚
+   1 定义：一件事从开始发生到结束的整个过程
+   2 作用：确保数据一致性
+   3 事务和事务回滚应用
+     1 mysql中sql命令会自动commit到数据库
+       show variables like 'autocommit';
+     2 事务应用
+      1 开启事务
+         begin
+         ....一台或多条sql命令
+         ##此时autocommit被禁用
+      2 终止事务
+        commit; rollback;(回滚)
+        当事务中有些操作失误，使用事务回滚，回到之前操作
+      3 1
+          案例
+            你建行卡
+            你朋友 工商卡
+            在建行给朋友转5000
+        2 建表
+          ccb
+                begin;
+                update ccb set money=money-5000 where name='只手遮天';
+                update icbc set 宕机了
+                rollback;/commit;
+mysql 与python交互
+   1 交互类型
+      1 Python3 ：Pymysql
+        安装 在线：sudo pip3 install pymysql
+            离线：pynysql-0.7.11.tar.gz
+            tar -zxvf ...
+            cd pymysql-0.7.11
+            sudo python3 setup.py install
+        sqlalchemy安装
+            在线:sudo pip3 install sqlalchemy
+            离线：tar -zxvf SQLAlchemy-1.2.10.tar.gz
+                 cd SQLAlchemy-1.2.10
+                 sudo python3 setup.py install
+            验证
+                python3
+                import sqlalchemy(验证有无此模块)
+    Pymysql使用流程
+      1 建立数据库连接（db=Pymysql.connect(...))
+      2 创建游标对象（c=db.cursor())
+      3 游标方法：c.execute('insert...')
+      4
+      5 关闭游标对象：c.close()
+      6 断开数据库连接 db.close()
+    connect 对象
+      1 db=Pymysql.connect(参数列表)
+         host 主机地址，本地 localhost
+         port(端口) 3306
+         user 用户名
+         password  密码
+         database 库
+         编码方式 charset=utf8 推荐使用这个
+      2 数据库连接方法
+        1 对象.close() 关闭与数据库连接
+        2    .commit()提交到数据库执行
+        3    .rollback() 回滚
+        4    .cursor() 返回游标对象，用于执行具体sql命令
+      3 游标对象方法(cur)
+        1 cur.execute(sql命令,[列表])执行
+        2 cur.close()关闭游标对象
+        3 cur.fetchone()获取查询结果第一条数据
+        4 cur.fetchmany(n)获取n条
+        5 cur.fetchall()获取所有记录
+从终端输入直接到mysql
+
+
+
+orm定义：把对象映射到数据库中
+      2 sqlalchemy安装：
+      3 示例
+        class User(Base):
+        __tablename__='t1'#声明要创建的表名
+        id=Column(Integer,primary_key=Ture)
+        name=Column(String(20))
+        解释 一个
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+Welcome to the documentation for MongoDB Cloud Manager. Engineered by the team who develops MongoDB, Cloud Manager provides a complete package for123 managing MongoDB deployments.
+
+Cloud Manager Overview  123
+Describes Cloud Manager.
+Create or Import Deployments
+Provision servers, and create or import MongoDB deployments.
+Manage Deployments  23.45
+Manage and update your MongoDB deployments.
+Alerts and Monitoring
+Monitor your MongoDB deployments and manage alerts. 56%
+Backup and Restore 1/2
+Initiate and restore backups.
+Security 100,000,123 
+Describes Cloud Manager security features.
+Agents  -56
+View and manage Cloud Manager project’s agents.
+Organizations and Projects
+Manage Cloud Manager organizations, projects, and users.
+Account Management
+Manage your Cloud Manager user account.
+API
+Manage Cloud Manager through the API.
+Troubleshooting
+Troubleshooting advice for common issues.
+Frequently Asked Questions
+Common questions about the operation and use of Cloud Manager.
+Reference
+Reference material for Cloud Manager components and operations.
+Release Notes
+Changelogs and notes on Cloud Manager releases

@@ -1,0 +1,215 @@
+day11.txt
+
+复习：
+非关系数据库和关系型数据库的比较
+    1，不是以关系模型构建的，结构自由
+    2，非关系数据库不保证数据的一致性
+    3，可以在处理高并发和海量数据时弥补关系型数据库的不足
+    4，在技术上没有关系型数据库成熟也没有sql语句的操作
+
+mongo  文档型数据库
+创建数据库： use databaseName 
+删除数据库：db.dropDatabase()
+创建集合：db.createCollection()
+        db.collection.insert()
+
+删除集合：db.collection.drop()
+重命名: db.collection.renameCollection(new_name)
+获取一个集合对象：db.getCollection(name)
+查看数据库：show dbs 
+查看集合：show tables 
+        show collections
+插入文档：insert()   save()
+
+===========================================
+查找操作
+    mongo: db.collection.find(query,field)
+            query:查找条件  相当于where子句 以键值对的形式给出查找条件
+            field:查找的字段名（域）
+            以键值对的形式给出要展示（不展示的域）
+            域名为键 0 为值表示不显示该域
+                    1 为值表示显示该域
+            返回值：返回查找到的文档
+
+    如：db.collection.find({name:'Tom'},{})
+如果使用0设置某些域不显示则默认其他域显示
+如果使用1设置某些域显示则默认其他域不显示（_id除外）
+_id只有设置为0 才会不显示，否则默认显示  
+
+除_id外，其他域必须同时设置为1或0
+如果不写该参数，则默认显示所有的内容
+
+findOne(query,field)
+功能：查找符合条件的第一条文档
+参数：同find
+返回值：查找到的文档
+
+query 更丰富的用法
+操作符：使用$号注明的一个特殊意义字串，表达某个特定含义
+比如$gt 表示大于 
+比较操作符
+    $eq  等于   
+
+        db.class0.find({age:{$eq:17}},{_id:0})
+
+    $lt 小于
+        db.class0.find({age:{$lt:'Tom'}},{_id:0})
+        db.class0.find({age:{$lt:17}},{_id:0})
+
+    $gt 大于
+
+    $lte  小于等于
+
+    $gte 大于等于
+
+    $ne  不等于
+
+    $in  找出在列表中的元素
+    db.class0.find({age:{$in:[17,18]}},{_id:0})
+
+    $nin  找出不在列表中的元素
+    db.class0.find({age:{$nin:[17,18]}},{_id:0})
+
+
+逻辑操作符
+    $and 
+    *query 中如果多个条件用逗号隔开即为and关系
+    db.class0.find({age:18,sex:'m']},{_id:0})
+
+    $or
+    db.class0.find({$or:[{age:18},{sex:'m'}]},{_id:0})
+
+    $not
+    查找年龄不等于17的文档
+    db.class0.find({age:{$not:{$eq:17}}_id:0})
+    $nor 既不也不
+
+年龄小于19或者大于23 并且是男性
+db.class0.find({$and:[{$or:[{age:{$lt:19}},{age:{$gt:23}}]},{sex:'m'}]},{_id:0})
+
+数组：
+    表达：使用中括号将一定的数组织成一种数据结构
+    数组中数据类型可以不同
+    数组是有序的
+
+数组汇中有任意一项大于90即可
+ db.class0.find({score:{$lt:90}},{_id:0})
+
+$size
+通过数组中元素的个数查找
+查找数组中包含两项的文档
+db.class0.find({score:{$size:2}},{_id:0})
+
+$all
+查找数组中同时包含多项的文档
+    数组中通知包含78,79 的文档
+db.class0.find({score:{$all:[78,79]}},{_id:0})
+
+$slice
+取数组的部分进行显示，在filed中声明
+显示数组中的前两项
+db.class0.find({},{_id:0,score:{$slice:2}})
+显示跳过第一项的后两项
+db.class0.find({},{_id:0,score:{$slice:[1,2]}})
+
+$exists
+判断一个域是否存在
+
+查找有sex域的文档（true表示存在，false表示不存在）
+db.class0.find({sex:{$exists:true}},{_id:0})
+
+$mod
+余数查找
+查找年龄是奇数的文档
+db.class0.find({age:{$mod:[2,1]}},{_id:0})
+
+$type
+数据类型查找
+db.class0.find({age:{$type:1}},{_id:0})
+
+操作符方法文档查找
+www.mongo.com --> docs ---> search
+
+查找结果的进一步操作
+
+distinct()
+功能：查看集合中某个域的取值范围
+db.class5.distinct('hobby')
+
+pretty()
+功能：将查询结果格式化显示
+db.class0.find().pretty()
+
+limit(n)
+功能：显示查找结果的前n条文档
+db.class0.find({},{_id:0}).limit(3)
+
+skin(n)
+功能：跳过前n条，显示后面的内容
+db.class0.find({},{_id:0}).skip(2)
+
+count()
+功能：计数统计
+
+sort({field:1/-1})
+功能：对查找结果排序
+参数：以键值对形式给出，键表示按照哪个域排序
+   1  升序  -1 降序
+
+复合排序：当第一排序项相同时按照第二排序项排序
+
+db.class0.find({},{_id:0}).sort({age:1,name:1})
+
+文档的删除操作
+    mysql : delete from 表名 where ..
+    mongo:  db.collection.remove(query,justOne)
+
+remove(query,justOne)
+功能：删除文档
+参数：query 筛选要删除的文档，相当于where
+           用法同查找一样
+
+    justOne  布尔值 默认为False 表示删除所有符合条件的文档
+             如果设置为True  表示只删除第一条符合条件的文档
+
+删除年龄值不是数字类型的
+    db.class0.remove({age:{$not:{$type:1}}})
+删除第一个年龄为17的文档
+    db.class0.remove({age:17},true)
+
+删除一个集合所有文档
+db.collection.remove({})
+
+修改操作
+mysql :  update table set 字段名 where ...
+mongo: db.collection.update
+(query,update,upsert,multi)
+
+功能：修改文档
+参数：query  筛选要修改的文档，相当于where 
+      用法同查找一样
+    update  将筛选的文档修改为什么内容，
+            相当于set 需要配合修改操作符一同使用
+    upsert: bool值，默认为false 如果query的
+    文档不存在，则不进行任何操作
+        如果设置为true 则如果query的文档不存在，
+        就会根据query和update 插入新文档
+    multi:布尔值  默认为false  如果query文档有
+    多条则只修改第一条
+            如果设置为true，则修改所有符合条件的文档
+
+
+如果设置为true 则如果query的文档不存在，
+        就会根据query和update 插入新文档
+db.class5.update({name:'xiaope'},{$set:{age:9},true)
+
+把年龄大于11的全部修改为10
+db.class5.update({age:{$gt:11}},{$set:{age:10}},false,true)
+
+作业：
+练习查找，删除操作，记忆操作符使用
+回顾文档的查找方法，将课上练习进行熟练
+
+
+
+
